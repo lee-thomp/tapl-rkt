@@ -1,0 +1,4 @@
+#+title: tapl-rkt
+#+author: lee
+
+These are a collection of my solutions and workings out of various exercises from Benjamin Pierce's Types and Programming Languages implemented in Racket.
