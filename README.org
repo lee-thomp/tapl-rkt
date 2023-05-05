@@ -1,4 +1,19 @@
 #+title: tapl-rkt
 #+author: lee
 
-These are a collection of my solutions and workings out of various exercises from Benjamin Pierce's Types and Programming Languages implemented in Racket.
+** Summary
+
+These are a collection of my solutions and workings out of various exercises from Benjamin Pierce's [[https://www.cis.upenn.edu/~bcpierce/tapl/][Types and Programming Languages]] implemented in Racket. Each exercise or section I wrote code for should have its own directory containing the solution/work along with an individual readme and some tests.
+
+
+** Running
+
+For these exercises I use Emacs' [[https://www.nongnu.org/geiser/][Geiser]] mode, but loading files of interest into a bare REPL should work as well. Tests for any exercise can be run using =racket -t run-tests.rkt=.
+
+
+** Inspiration/References
+
+- [[https://matt.might.net/]]
+- [[https://docs.racket-lang.org/index.html]]
+- [[https://docs.racket-lang.org/reference/match.html]]
+- [[https://www.nongnu.org/geiser/]]
