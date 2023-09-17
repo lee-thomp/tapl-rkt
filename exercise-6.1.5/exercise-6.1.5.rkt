@@ -40,19 +40,14 @@
 ;;;    V of variable names is ordered, so that it makes sense to say “choose the
 ;;;    first variable name that is not already in dom(Γ).”)
 
-;;; Swap the car and cdr of a pair.
-(define (flip pair)
-  `(,(cdr pair) . ,(car pair)))
-
-;;; Flip a mapping (association list) so the de Bruijn index can be `assoc`ed.
-(define (flip-alist Γ)
-  (map flip Γ))
-
 ;;; Grabs a pair in an alist according to the cdrs of the pairs,
 ;;; - like `assoc` returns #f if no association found.
 (define (assoc-cdr v lst)
-  (let ([mapping (assoc v (flip-alist lst))])
-    (if mapping (flip mapping) #f)))
+  (cond
+   [(equal? v (cdar lst)) (car lst)]
+   [(empty? lst) #f]
+   [else
+    (assoc-cdr v (cdr lst))]))
 
 ;;; Create a new name for a bound variable that is not already in Γ.
 ;;; - This proc produces symbols in the range [a-z] and skips symbols that are
