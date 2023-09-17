@@ -1,20 +1,20 @@
 #lang racket
 
-;;; 6.1.5 Exercise [Recommended, ★★★]:
+;;;; 6.1.5 Exercise [Recommended, ★★★]:
 
 ;;; 1. Define a function removenamesΓ (t) that takes a naming context Γ and
 ;;;    an ordinary term t (with FV(t) ⊆ dom(Γ)) and yields the corresponding
 ;;;    nameless term.
 
-;; Bumps all de Bruijn indices in a variable mapping up by 1.
+;;; Bumps all de Bruijn indices in a variable mapping up by 1.
 (define (↑ Γ)
   (map (λ (pair) `(,(car pair) . ,(+ 1 (cdr pair)))) Γ))
 
-;; Increment the context with a new mapping.
+;;; Increment the context with a new mapping.
 (define (add-var v Γ)
   (cons `(,v . 0) (↑ Γ)))
 
-;; Converts terms using pattern matching substitution over the expression tree.
+;;; Converts terms using pattern matching substitution over the expression tree.
 (define (remove-names Γ t)
   (match t
     ;; Add bound var to mapping, replace vars in body.
@@ -40,34 +40,34 @@
 ;;;    V of variable names is ordered, so that it makes sense to say “choose the
 ;;;    first variable name that is not already in dom(Γ).”)
 
-;; Swap the car and cdr of a pair.
+;;; Swap the car and cdr of a pair.
 (define (flip pair)
   `(,(cdr pair) . ,(car pair)))
 
-;; Flip a mapping (association list) so the de Bruijn index can be `assoc`ed.
+;;; Flip a mapping (association list) so the de Bruijn index can be `assoc`ed.
 (define (flip-alist Γ)
   (map flip Γ))
 
-;; Grabs a pair in an alist according to the cdrs of the pairs,
-;; - like `assoc` returns #f if no association found.
+;;; Grabs a pair in an alist according to the cdrs of the pairs,
+;;; - like `assoc` returns #f if no association found.
 (define (assoc-cdr v lst)
   (let ([mapping (assoc v (flip-alist lst))])
     (if mapping (flip mapping) #f)))
 
-;; Create a new name for a bound variable that is not already in Γ.
-;; - This proc produces symbols in the range [a-z] and skips symbols that are
-;;   already present in the given mapping.
+;;; Create a new name for a bound variable that is not already in Γ.
+;;; - This proc produces symbols in the range [a-z] and skips symbols that are
+;;;   already present in the given mapping.
 (define gen-var
-  (letrec ([start (char->integer #\a)] 
+  (letrec ([start (char->integer #\a)]
            [counter start]
            [limit (char->integer #\z)])
 
     (define (integer->char-symbol i)
       (string->symbol (string (integer->char i))))
-  
+
     ;; Increments counter, wrapping round after #\z.
     (define (inc-counter!)
-      (if (= limit counter) 
+      (if (= limit counter)
           (set! counter start)
           (set! counter (add1 counter))))
 
@@ -79,7 +79,7 @@
                (if (assoc current-sym Γ) (gen-var Γ)
                    current-sym))))))
 
-;; Take a nameless lambda term and recover named variables.
+;;; Take a nameless lambda term and recover named variables.
 (define (restore-names Γ t)
   (match t
     [(? number?) (let ([mapping (assoc-cdr t Γ)])
