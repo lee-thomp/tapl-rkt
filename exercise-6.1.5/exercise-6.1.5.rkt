@@ -6,9 +6,11 @@
 ;;;    an ordinary term t (with FV(t) ⊆ dom(Γ)) and yields the corresponding
 ;;;    nameless term.
 
-;;; Bumps all de Bruijn indices in a variable mapping up by 1.
+;;; Bumps all de Bruijn indices in a variable mapping (`Γ') up by 1.
 (define (↑ Γ)
-  (map (λ (pair) `(,(car pair) . ,(+ 1 (cdr pair)))) Γ))
+  (map (λ (pair)
+         `(,(car pair) . ,(+ 1 (cdr pair))))
+       Γ))
 
 ;;; Increment the context with a new mapping.
 (define (add-var v Γ)
@@ -33,6 +35,7 @@
 
 (provide remove-names)
 
+
 ;;; 2. Define a function restorenamesΓ (t) that takes a nameless term t and a
 ;;;    naming context Γ and produces an ordinary term. (To do this, you will
 ;;;    need to “make up” names for the variables bound by abstractions in t.
@@ -41,7 +44,7 @@
 ;;;    first variable name that is not already in dom(Γ).”)
 
 ;;; Grabs a pair in an alist according to the cdrs of the pairs,
-;;; - like `assoc` returns #f if no association found.
+;;; - like `assoc' returns `#f' if no association found.
 (define (assoc-cdr v lst)
   (cond
    [(equal? v (cdar lst)) (car lst)]
@@ -70,16 +73,22 @@
     ;; return if name is not in mapping, else generate next var name.
     (λ (Γ)
       (let ([current-sym (integer->char-symbol counter)])
-        (begin (inc-counter!)
-               (if (assoc current-sym Γ) (gen-var Γ)
-                   current-sym))))))
+        (begin
+          (inc-counter!)
+          (if (assoc current-sym Γ)
+              (gen-var Γ)
+              current-sym))))))
 
 ;;; Take a nameless lambda term and recover named variables.
 (define (restore-names Γ t)
   (match t
+    ;; If term is a number, check for its mapping in the environment.
+    ;; If mapping exists, replace with the variable, if not generate a new one.
     [(? number?) (let ([mapping (assoc-cdr t Γ)])
                    (if mapping (car mapping) (gen-var Γ)))]
 
+    ;; Assume that in any environment 0 maps to the inner-most variable.
+    ;; In this case, (λ 0) becomes the equivalent non-de Bruijn identity.
     ['(λ 0)
      (let ([v (gen-var Γ)])
        `(λ (,v) ,v))]
