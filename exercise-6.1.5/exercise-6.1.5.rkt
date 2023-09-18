@@ -43,8 +43,8 @@
 ;;;    V of variable names is ordered, so that it makes sense to say “choose the
 ;;;    first variable name that is not already in dom(Γ).”)
 
-;;; Grabs a pair in an alist according to the cdrs of the pairs,
-;;; - like `assoc' returns `#f' if no association found.
+;;; Grabs a pair in an alist according to the cdrs of the pairs.
+;;; - Like `assoc' returns `#f' if no association found.
 (define (assoc-cdr v lst)
   (cond
    [(equal? v (cdar lst)) (car lst)]
@@ -93,12 +93,16 @@
      (let ([v (gen-var Γ)])
        `(λ (,v) ,v))]
 
+    ;; If the lambda expression is ‘complex’, create a new lambda binding and
+    ;; restore names in the expression with the new binding added to Γ.
     [`(λ ,exp)
      (let ([v (gen-var Γ)])
        `(λ (,v) ,(restore-names (add-var v Γ) exp)))]
 
+    ;; For an application, restore names of both sides.
     [`(,t1 ,t2) `(,(restore-names Γ t1) ,(restore-names Γ t2))]
 
+    ;; If none of the above cases match, error out.
     [else (display (format "Unkown exp: ~s~n" t))
           (error "Unknown exp")]))
 
